@@ -13,3 +13,5 @@ def exponential_time(n):
     print(f"Time taken: {end - start:.6f} seconds")
 
 exponential_time(10)
+exponential_time(12)
+exponential_time(14)
