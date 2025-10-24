@@ -1,137 +1,102 @@
+from colorama import Fore, Style, init
+
+# Initialize colorama
+init(autoreset=True)
+
 class Node:
     def __init__(self, data):
-        self.data = data
-        self.next = None
+        self.data = data  # stores data
+        self.next = None  # pointer to next node
 
-class SinglyLinkedList:
+class LinkedList:
     def __init__(self):
         self.head = None
 
-    # Insert at beginning
-    def insert_beginning(self, data):
+    def insert(self, data):
         new_node = Node(data)
-        new_node.next = self.head
-        self.head = new_node
-
-    # Insert at end
-    def insert_end(self, data):
-        new_node = Node(data)
-        if not self.head:
+        if self.head is None:
             self.head = new_node
+            print(Fore.GREEN + f"{data} inserted successfully.")
             return
-        curr = self.head
-        while curr.next:
-            curr = curr.next
-        curr.next = new_node
+        current = self.head
+        while current.next:
+            current = current.next
+        current.next = new_node
+        print(Fore.GREEN + f"{data} inserted successfully.")
 
-    # Insert at position (0-based index)
-    def insert_position(self, data, pos):
-        if pos == 0:
-            self.insert_beginning(data)
+    def delete(self, data):
+        if self.head is None:
+            print(Fore.RED + "List is empty. Nothing to delete.")
             return
-        new_node = Node(data)
-        curr = self.head
-        for _ in range(pos - 1):
-            if curr is None:
-                return
-            curr = curr.next
-        if curr is None:
-            return
-        new_node.next = curr.next
-        curr.next = new_node
 
-    # Delete from beginning
-    def delete_beginning(self):
-        if self.head:
+        if self.head.data == data:
             self.head = self.head.next
+            print(Fore.RED + f"{data} deleted successfully.")
+            return
 
-    # Delete from end
-    def delete_end(self):
-        if not self.head:
-            return
-        if not self.head.next:
-            self.head = None
-            return
-        curr = self.head
-        while curr.next.next:
-            curr = curr.next
-        curr.next = None
+        current = self.head
+        while current.next and current.next.data != data:
+            current = current.next
 
-    # Delete from position (0-based index)
-    def delete_position(self, pos):
-        if pos == 0 and self.head:
-            self.head = self.head.next
-            return
-        curr = self.head
-        for _ in range(pos - 1):
-            if curr is None or curr.next is None:
+        if current.next is None:
+            print(Fore.RED + f"{data} not found in the list.")
+        else:
+            current.next = current.next.next            
+            print(Fore.RED + f"{data} deleted successfully.")
+
+    def update(self, old_value, new_value):
+        current = self.head
+        while current:
+            if current.data == old_value:
+                current.data = new_value
+                print(Fore.CYAN + f"Updated {old_value} to {new_value}.")
                 return
-            curr = curr.next
-        if curr.next:
-            curr.next = curr.next.next
+            current = current.next
+        print(Fore.RED + f"{old_value} not in the list.")
 
-    # Search for a value
-    def search(self, value):
-        curr = self.head
-        pos = 0
-        while curr:
-            if curr.data == value:
-                return pos
-            curr = curr.next
-            pos += 1
-        return -1
-
-    # Update value at position
-    def update(self, pos, new_data):
-        curr = self.head
-        for _ in range(pos):
-            if curr is None:
-                return
-            curr = curr.next
-        if curr:
-            curr.data = new_data
-
-    # Count length
-    def length(self):
-        count = 0
-        curr = self.head
-        while curr:
-            count += 1
-            curr = curr.next
-        return count
-
-    # Display list
     def display(self):
-        curr = self.head
-        while curr:
-            print(curr.data, end=" -> ")
-            curr = curr.next
-        print("None")
+        if self.head is None:
+            print(Fore.RED + "List is empty.")
+            return
+        current = self.head
+        print(Fore.MAGENTA + "Linked List: ", end="")
+        while current:
+            print(Fore.WHITE + str(current.data), end=" -> ")
+            current = current.next
+        print(Fore.MAGENTA + "None")
 
-# Example usage
-sll = SinglyLinkedList()
-sll.insert_end(10)
-sll.insert_end(20)
-sll.insert_beginning(5)
-sll.insert_position(15, 2)
-sll.display()  # 5 -> 10 -> 15 -> 20 -> None
+# Menu-driven program
+if __name__ == "__main__":
+    ll = LinkedList()
 
-sll.delete_beginning()
-sll.display()  # 10 -> 15 -> 20 -> None
+    while True:
+        print(Fore.BLUE + "\nMenu:")
+        print("1. Insert")
+        print("2. Delete")
+        print("3. Update")
+        print("4. Display")
+        print("5. Exit")
+        choice = input(Fore.YELLOW + "Enter your choice: ")
 
-sll.delete_end()
-sll.display()  # 10 -> 15 -> None
+        if choice == "1":
+            data = int(input("Enter value to insert: "))
+            ll.insert(data)
 
-sll.delete_position(1)
-sll.display()  # 10 -> None
+        elif choice == "2":
+            data = int(input("Enter value to delete: "))
+            ll.delete(data)
 
-print("Length:", sll.length())  # Length: 1
+        elif choice == "3":
+            old_value = int(input("Enter value to update: "))
+            new_value = int(input("Enter new value: "))
+            ll.update(old_value, new_value)
 
-sll.insert_end(25)
-sll.insert_end(30)
-sll.display()  # 10 -> 25 -> 30 -> None
+        elif choice == "4":
+            ll.display()
 
-print("Search for 25:", sll.search(25))  # Search for 25: 1
+        elif choice == "5":
+            print(Fore.GREEN + "Exiting program. Goodbye!")
+            break
 
-sll.update(1, 26)
-sll.display()  # 10 -> 26 -> 30 -> None
+        else:
+            print(Fore.RED + "Invalid choice. Please try again.")
