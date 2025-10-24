@@ -1,82 +1,116 @@
+from colorama import Fore, Style
+
+# Node class
 class Node:
     def __init__(self, data):
         self.data = data
-        self.prev = None
-        self.next = None
+        self.prev = None  # Previous node reference
+        self.next = None  # Next node reference
 
+# Doubly Linked List class
 class DoublyLinkedList:
     def __init__(self):
         self.head = None
 
-    # Insert at beginning
-    def insert_beginning(self, data):
+    # Insert at the end
+    def insert(self, data):
         new_node = Node(data)
-        new_node.next = self.head
-        if self.head:
-            self.head.prev = new_node
-        self.head = new_node
-
-    # Insert at end
-    def insert_end(self, data):
-        new_node = Node(data)
-        if not self.head:
+        if self.head is None:
             self.head = new_node
+            print(Fore.GREEN + f"Inserted {data} as head node" + Style.RESET_ALL)
             return
-        curr = self.head
-        while curr.next:
-            curr = curr.next
-        curr.next = new_node
-        new_node.prev = curr
+        temp = self.head
+        while temp.next:
+            temp = temp.next
+        temp.next = new_node
+        new_node.prev = temp
+        print(Fore.GREEN + f"Inserted {data} after {temp.data}" + Style.RESET_ALL)
 
-    # Delete from beginning
-    def delete_beginning(self):
-        if self.head:
-            self.head = self.head.next
-            if self.head:
-                self.head.prev = None
+    # Delete a node
+    def delete(self, key):
+        temp = self.head
+        while temp:
+            if temp.data == key:
+                if temp.prev:
+                    temp.prev.next = temp.next
+                if temp.next:
+                    temp.next.prev = temp.prev
+                if temp == self.head:  # if deleting head
+                    self.head = temp.next
+                print(Fore.RED + f"Deleted {key}" + Style.RESET_ALL)
+                return
+            temp = temp.next
+        print(Fore.YELLOW + f"{key} not found in the list" + Style.RESET_ALL)
 
-    # Delete from end
-    def delete_end(self):
-        if not self.head:
-            return
-        if not self.head.next:
-            self.head = None
-            return
-        curr = self.head
-        while curr.next:
-            curr = curr.next
-        curr.prev.next = None
+    # Update a node’s value
+    def update(self, old, new):
+        temp = self.head
+        while temp:
+            if temp.data == old:
+                temp.data = new
+                print(Fore.CYAN + f"Updated {old} → {new}" + Style.RESET_ALL)
+                return
+            temp = temp.next
+        print(Fore.YELLOW + f"{old} not found in the list" + Style.RESET_ALL)
 
-    # Display list forward
+    # Display forward
     def display_forward(self):
-        curr = self.head
-        while curr:
-            print(curr.data, end=" <-> ")
-            last = curr
-            curr = curr.next
-        print("None")
-
-    # Display list backward
-    def display_backward(self):
-        curr = self.head
-        if not curr:
-            print("None")
+        temp = self.head
+        if not temp:
+            print(Fore.YELLOW + "List is empty" + Style.RESET_ALL)
             return
-        while curr.next:
-            curr = curr.next
-        while curr:
-            print(curr.data, end=" <-> ")
-            curr = curr.prev
+        print(Fore.MAGENTA + "Forward traversal:", end=" " + Style.RESET_ALL)
+        while temp:
+            print(temp.data, end=" <-> ")
+            last = temp
+            temp = temp.next
         print("None")
 
-# Example usage
+    # Display backward
+    def display_backward(self):
+        temp = self.head
+        if not temp:
+            print(Fore.YELLOW + "List is empty" + Style.RESET_ALL)
+            return
+        while temp.next:
+            temp = temp.next
+        print(Fore.MAGENTA + "Backward traversal:", end=" " + Style.RESET_ALL)
+        while temp:
+            print(temp.data, end=" <-> ")
+            temp = temp.prev
+        print("None")
+
+
+# ----------- Menu-driven program -------------
 dll = DoublyLinkedList()
-dll.insert_end(10)
-dll.insert_end(20)
-dll.insert_beginning(5)
-dll.display_forward()    # 5 <-> 10 <-> 20 <-> None
-dll.display_backward()   # 20 <-> 10 <-> 5 <-> None
-dll.delete_beginning()
-dll.display_forward()    # 10 <-> 20 <-> None
-dll.delete_end()
-dll.display_forward()    # 10 <-> None
+
+while True:
+    print("\n" + Fore.BLUE + "Menu:" + Style.RESET_ALL)
+    print("1. Insert")
+    print("2. Delete")
+    print("3. Update")
+    print("4. Display Forward")
+    print("5. Display Backward")
+    print("6. Exit")
+
+    choice = int(input("Enter your choice: "))
+
+    if choice == 1:
+        val = int(input("Enter value to insert: "))
+        dll.insert(val)
+    elif choice == 2:
+        val = int(input("Enter value to delete: "))
+        dll.delete(val)
+    elif choice == 3:
+        old = int(input("Enter value to update: "))
+        new = int(input("Enter new value: "))
+        dll.update(old, new)
+    elif choice == 4:
+        dll.display_forward()
+    elif choice == 5:
+        dll.display_backward()
+    elif choice == 6:
+        print(Fore.GREEN + "Exiting..." + Style.RESET_ALL)
+        break
+    else:
+        print(Fore.YELLOW + "Invalid choice" + Style.RESET_ALL)
